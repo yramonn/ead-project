@@ -1,5 +1,6 @@
 package com.ead.auth_service.services.impl;
 
+import com.ead.auth_service.exceptions.NotFoundException;
 import com.ead.auth_service.models.UserModel;
 import com.ead.auth_service.repositories.UserRepository;
 import com.ead.auth_service.services.UserService;
@@ -25,7 +26,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserModel> findById(UUID userId) {
-        return userRepository.findById(userId);
+        Optional<UserModel> userModelOptional = userRepository.findById(userId);
+        if(userModelOptional.isEmpty()) {
+            throw new NotFoundException("Error: User not found");
+        }
+        return userModelOptional;
     }
 
     @Override
