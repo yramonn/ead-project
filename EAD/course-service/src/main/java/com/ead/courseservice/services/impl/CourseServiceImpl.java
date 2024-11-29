@@ -1,5 +1,6 @@
 package com.ead.courseservice.services.impl;
 
+import com.ead.courseservice.dtos.CourseRecordDto;
 import com.ead.courseservice.models.CourseModel;
 import com.ead.courseservice.models.LessonModel;
 import com.ead.courseservice.models.ModuleModel;
@@ -7,9 +8,12 @@ import com.ead.courseservice.repositories.CourseRepository;
 import com.ead.courseservice.repositories.LessonRepository;
 import com.ead.courseservice.repositories.ModuleRepository;
 import com.ead.courseservice.services.CourseService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -39,5 +43,19 @@ public class CourseServiceImpl implements CourseService {
             moduleRepository.deleteAll(moduleModelList);
         }
         courseRepository.delete(courseModel);
+    }
+
+    @Override
+    public CourseModel save(CourseRecordDto courseRecordDto) {
+        var courseModel = new CourseModel();
+        BeanUtils.copyProperties(courseRecordDto, courseModel);
+        courseModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        courseModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        return courseRepository.save(courseModel);
+    }
+
+    @Override
+    public boolean existsByName(String name) {
+        return courseRepository.existsByName(name);
     }
 }
