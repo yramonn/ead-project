@@ -3,13 +3,19 @@ package com.ead.courseservice.services;
 import com.ead.courseservice.dtos.ModuleRecordDto;
 import com.ead.courseservice.models.CourseModel;
 import com.ead.courseservice.models.ModuleModel;
-import jakarta.validation.Valid;
-
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ModuleService {
 
     void delete(ModuleModel module);
 
-    ModuleModel save(@Valid ModuleRecordDto moduleRecordDto, CourseModel courseModel);
+    ModuleModel save(ModuleRecordDto moduleRecordDto, CourseModel courseModel);
+
+    List<ModuleModel> findAllModulesIntoCourse(UUID courseId);
+
+    Optional<ModuleModel> findModuleIntoCourse(UUID courseId, UUID moduleId);
+
+    ModuleModel update(ModuleRecordDto moduleRecordDto, ModuleModel moduleModel);
 }
