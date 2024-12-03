@@ -18,4 +18,6 @@ public interface ModuleService {
     Optional<ModuleModel> findModuleIntoCourse(UUID courseId, UUID moduleId);
 
     ModuleModel update(ModuleRecordDto moduleRecordDto, ModuleModel moduleModel);
+
+    Optional<ModuleModel> findById(UUID moduleId);
 }
