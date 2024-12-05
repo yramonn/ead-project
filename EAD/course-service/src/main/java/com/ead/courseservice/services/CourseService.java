@@ -2,8 +2,6 @@ package com.ead.courseservice.services;
 
 import com.ead.courseservice.dtos.CourseRecordDto;
 import com.ead.courseservice.models.CourseModel;
-import jakarta.validation.Valid;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
