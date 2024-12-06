@@ -3,7 +3,10 @@ package com.ead.courseservice.controllers;
 import com.ead.courseservice.dtos.CourseRecordDto;
 import com.ead.courseservice.models.CourseModel;
 import com.ead.courseservice.services.CourseService;
+import com.ead.courseservice.specifications.SpecificationTemplate;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,8 +33,8 @@ public class CourseController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CourseModel>> getAllCourses() {
-        return ResponseEntity.status(HttpStatus.OK).body(courseService.findAll());
+    public ResponseEntity<Page<CourseModel>> getAllCourses(SpecificationTemplate.CourseSpec spec, Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(courseService.findAll(spec,pageable));
     }
 
     @GetMapping("/{courseId}")
