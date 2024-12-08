@@ -4,12 +4,14 @@ import com.ead.courseservice.dtos.LessonRecordDto;
 import com.ead.courseservice.models.LessonModel;
 import com.ead.courseservice.services.LessonService;
 import com.ead.courseservice.services.ModuleService;
+import com.ead.courseservice.specifications.SpecificationTemplate;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -31,9 +33,11 @@ public class LessonController {
     }
 
     @GetMapping("/modules/{moduleId}/lessons")
-    public ResponseEntity<List<LessonModel>> getAllLessons(@PathVariable(value = "moduleId") UUID moduleId) {
+    public ResponseEntity<Page<LessonModel>> getAllLessons(@PathVariable(value = "moduleId") UUID moduleId,
+                                                           SpecificationTemplate.LessonSpec spec,
+                                                           Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(lessonService.findAllLessonsIntoModule(moduleId));
+                .body(lessonService.findAllLessonsIntoModule(SpecificationTemplate.lessonModuleId(moduleId).and(spec),pageable));
     }
 
     @GetMapping("/modules/{moduleId}/lessons/{lessonId}")

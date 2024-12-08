@@ -1,17 +1,17 @@
 package com.ead.courseservice.controllers;
 
-import com.ead.courseservice.dtos.CourseRecordDto;
 import com.ead.courseservice.dtos.ModuleRecordDto;
-import com.ead.courseservice.models.CourseModel;
 import com.ead.courseservice.models.ModuleModel;
 import com.ead.courseservice.services.CourseService;
 import com.ead.courseservice.services.ModuleService;
+import com.ead.courseservice.specifications.SpecificationTemplate;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,9 +33,11 @@ public class ModuleController {
     }
 
     @GetMapping("/courses/{courseId}/modules")
-    public ResponseEntity<List<ModuleModel>> getAllModules(@PathVariable(value = "courseId") UUID courseId) {
+    public ResponseEntity<Page<ModuleModel>> getAllModules(@PathVariable(value = "courseId") UUID courseId,
+                                                           SpecificationTemplate.ModuleSpec spec,
+                                                           Pageable pageable){
         return ResponseEntity.status(HttpStatus.OK)
-                .body(moduleService.findAllModulesIntoCourse(courseId));
+                .body(moduleService.findAllModulesIntoCourse(SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable));
     }
 
     @GetMapping("/courses/{courseId}/modules/{moduleId}")

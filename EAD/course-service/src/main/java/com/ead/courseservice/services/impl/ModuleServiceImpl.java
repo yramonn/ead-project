@@ -9,6 +9,9 @@ import com.ead.courseservice.repositories.LessonRepository;
 import com.ead.courseservice.repositories.ModuleRepository;
 import com.ead.courseservice.services.ModuleService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,12 +53,12 @@ public class ModuleServiceImpl implements ModuleService {
 
     @Override
     public List<ModuleModel> findAllModulesIntoCourse(UUID courseId) {
-        return moduleRepository.findAllModuleIntoCourse(courseId);
+        return moduleRepository.findAllModulesIntoCourse(courseId);
     }
 
     @Override
     public Optional<ModuleModel> findModuleIntoCourse(UUID courseId, UUID moduleId) {
-        Optional<ModuleModel> moduleModelOptional = moduleRepository.findAllModuleIntoCourse(courseId, moduleId);
+        Optional<ModuleModel> moduleModelOptional = moduleRepository.findModuleIntoCourse(courseId, moduleId);
         if(moduleModelOptional.isEmpty()) {
             throw new NotFoundException("Error: Module not found for this course");
         }
@@ -75,5 +78,10 @@ public class ModuleServiceImpl implements ModuleService {
             throw new NotFoundException("Error: Module not found for this course");
         }
         return moduleModelOptional;
+    }
+
+    @Override
+    public Page<ModuleModel> findAllModulesIntoCourse(Specification<ModuleModel> spec, Pageable pageable) {
+        return moduleRepository.findAll(spec, pageable);
     }
 }
