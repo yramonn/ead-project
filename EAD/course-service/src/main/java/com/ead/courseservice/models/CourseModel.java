@@ -32,11 +32,11 @@ public class CourseModel implements Serializable {
     @Column(nullable = false, length = 255)
     private String description;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(nullable = false)
     private LocalDateTime creationDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(nullable = false)
     private LocalDateTime lastUpdateDate;
 
