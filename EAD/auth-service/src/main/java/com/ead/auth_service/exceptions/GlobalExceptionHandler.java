@@ -1,5 +1,7 @@
 package com.ead.auth_service.exceptions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -13,9 +15,12 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler  {
 
+    Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorRecordResponse> handleNotFoundException(NotFoundException ex){
         var errorRecordResponse = new ErrorRecordResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage(),null);
+        logger.error("NotFoundException: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorRecordResponse);
     }
 
@@ -29,6 +34,7 @@ public class GlobalExceptionHandler  {
         }
         );
         var errorRecordResponse = new ErrorRecordResponse(HttpStatus.BAD_REQUEST.value(), "Error: Validation failed", errors);
+        logger.error("MethodArgumentNotValidException: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorRecordResponse);
     }
 }

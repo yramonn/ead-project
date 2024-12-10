@@ -5,6 +5,8 @@ import com.ead.auth_service.models.UserModel;
 import com.ead.auth_service.services.UserService;
 import com.ead.auth_service.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
+    Logger logger = LogManager.getLogger(UserController.class);
 
     final UserService userService;
 
@@ -46,6 +50,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUserById(@PathVariable(value = "userId") UUID userId){
+        logger.debug("DELETE deleteUserById {}", userId);
         userService.deleteUserById(userService.findById(userId).get());
         return ResponseEntity.status(HttpStatus.OK).body("User deleted with success");
     }
@@ -55,6 +60,7 @@ public class UserController {
                                             @RequestBody @Validated(UserRecordDto.UserView.UserPut.class)
                                             @JsonView(UserRecordDto.UserView.UserPut.class)
                                             UserRecordDto userRecordDto) {
+        logger.debug("PUT updateUser userRecordDto {}", userRecordDto);
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userRecordDto, userService.findById(userId).get()));
     }
 
@@ -63,8 +69,10 @@ public class UserController {
                                              @RequestBody  @Validated(UserRecordDto.UserView.PasswordPut.class)
                                              @JsonView(UserRecordDto.UserView.PasswordPut.class)
                                              UserRecordDto userRecordDto) {
+        logger.debug("PUT updatePassword userId {}", userId);
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if(!userModelOptional.get().getPassword().equals(userRecordDto.oldPassword())) {
+            logger.warn("Password is incorrect! userId {}", userId);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Old password is wrong");
         }
         userService.updatePassword(userRecordDto, userModelOptional.get());
@@ -76,7 +84,7 @@ public class UserController {
                                                  @RequestBody  @Validated(UserRecordDto.UserView.ImagePut.class)
                                                  @JsonView(UserRecordDto.UserView.ImagePut.class)
                                                  UserRecordDto userRecordDto) {
-
+        logger.debug("PUT updateImage userRecordDto {}", userRecordDto);
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateImage(userRecordDto, userService.findById(userId).get()));
     }
 }
