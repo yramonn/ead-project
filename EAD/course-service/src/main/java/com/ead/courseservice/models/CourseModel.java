@@ -60,6 +60,10 @@ public class CourseModel implements Serializable {
 //    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<ModuleModel> modules;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private Set<CourseUserModel> courseUsers;
+
     public UUID getCourseId() {
         return courseId;
     }
@@ -138,5 +142,13 @@ public class CourseModel implements Serializable {
 
     public void setModules(Set<ModuleModel> modules) {
         this.modules = modules;
+    }
+
+    public Set<CourseUserModel> getCourseUsers() {
+        return courseUsers;
+    }
+
+    public void setCourseUsers(Set<CourseUserModel> courseUsers) {
+        this.courseUsers = courseUsers;
     }
 }
