@@ -28,3 +28,8 @@ logging:
     root: INFO
     org.springframework.web: DEBUG
     org.hibernate: INFO
+ead:
+  api:
+    url:
+      course: 'http://localhost:8083/ead-course-service'
+
