@@ -2,26 +2,39 @@ package com.ead.courseservice.controllers;
 
 
 import com.ead.courseservice.clients.AuthUserClient;
+import com.ead.courseservice.dtos.SubscriptionRecordDto;
 import com.ead.courseservice.dtos.UserRecordDto;
+import com.ead.courseservice.models.CourseModel;
+import com.ead.courseservice.models.CourseUserModel;
+import com.ead.courseservice.services.CourseService;
+import com.ead.courseservice.services.CourseUserService;
+import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
 public class CourseUserController {
 
-    final AuthUserClient authUserClient;
+    Logger logger = LogManager.getLogger(CourseUserController.class);
 
-    public CourseUserController(AuthUserClient authUserClient) {
+    final AuthUserClient authUserClient;
+    final CourseService courseService;
+    final CourseUserService courseUserService;
+
+    public CourseUserController(AuthUserClient authUserClient, CourseService courseService, CourseUserService courseUserService) {
         this.authUserClient = authUserClient;
+        this.courseService = courseService;
+        this.courseUserService = courseUserService;
     }
 
     @GetMapping("/courses/{courseId}/users")
@@ -29,7 +42,21 @@ public class CourseUserController {
                                                                    @PathVariable(value = "courseId") UUID courseId) {
 
         return ResponseEntity.status(HttpStatus.OK).body(authUserClient.getAllUsersByCourse(courseId, pageable));
+    }
 
+    @PostMapping("/courses/{courseId}/users/subscription")
+    public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId,
+                                                               @RequestBody @Valid SubscriptionRecordDto subscriptionRecordDto) {
+        Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
+        if(courseUserService.existsByCourseAndUserId(courseModelOptional.get(), subscriptionRecordDto.userId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Subscription already exists");
+        }
+        //user verification
+
+        CourseUserModel courseUserModel =
+                courseUserService.saveAndSendSubscriptionUserInCourse(courseModelOptional.get().convertToCourseUserModel(subscriptionRecordDto.userId()));
+        logger.info("Subscription User {} save with Success", subscriptionRecordDto.userId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(courseUserModel);
     }
 
 
