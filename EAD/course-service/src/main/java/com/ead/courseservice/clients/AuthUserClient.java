@@ -2,12 +2,14 @@ package com.ead.courseservice.clients;
 
 import com.ead.courseservice.dtos.ResponsePageDto;
 import com.ead.courseservice.dtos.UserRecordDto;
+import com.ead.courseservice.exceptions.NotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -44,5 +46,19 @@ public class AuthUserClient {
             throw new RuntimeException("Error Request RestClient", e);
         }
 
+    }
+
+    public ResponseEntity<UserRecordDto> getOneUserById(UUID userId) {
+        String url = baseUrlAuthUser + "/users/" + userId;
+        logger.debug("Request URL: {} ", url);
+
+            return restClient.get()
+                    .uri(url)
+                    .retrieve()
+                    .onStatus(status -> status.value() == 404, (request, response) -> {
+                        logger.error("Error> User not found: {} ", userId);
+                        throw new NotFoundException("Error: User not found.");
+                    })
+                    .toEntity(UserRecordDto.class);
     }
 }
