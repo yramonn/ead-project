@@ -1,5 +1,6 @@
 package com.ead.courseservice.services.impl;
 
+import com.ead.courseservice.clients.AuthUserClient;
 import com.ead.courseservice.dtos.CourseRecordDto;
 import com.ead.courseservice.exceptions.NotFoundException;
 import com.ead.courseservice.models.CourseModel;
@@ -32,17 +33,20 @@ public class CourseServiceImpl implements CourseService {
     final ModuleRepository moduleRepository;
     final LessonRepository lessonRepository;
     final CourseUserRepository courseUserRepository;
+    final AuthUserClient authUserClient;
 
-    public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository, LessonRepository lessonRepository, CourseUserRepository courseUserRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository, LessonRepository lessonRepository, CourseUserRepository courseUserRepository, AuthUserClient authUserClient) {
         this.courseRepository = courseRepository;
         this.moduleRepository = moduleRepository;
         this.lessonRepository = lessonRepository;
         this.courseUserRepository = courseUserRepository;
+        this.authUserClient = authUserClient;
     }
 
     @Transactional
     @Override
     public void delete(CourseModel courseModel) {
+        boolean deleteCourseUserInAuthUser = false;
         List<ModuleModel> moduleModelList = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
         if(!moduleModelList.isEmpty()){
             for(ModuleModel module : moduleModelList) {
@@ -56,8 +60,12 @@ public class CourseServiceImpl implements CourseService {
         List<CourseUserModel> courseUserModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
         if(!courseUserModelList.isEmpty()) {
             courseUserRepository.deleteAll(courseUserModelList);
+            deleteCourseUserInAuthUser = true;
         }
         courseRepository.delete(courseModel);
+        if(deleteCourseUserInAuthUser){
+            authUserClient.deleteCourseUserInAuthUser(courseModel.getCourseId());
+        }
     }
 
     @Override
