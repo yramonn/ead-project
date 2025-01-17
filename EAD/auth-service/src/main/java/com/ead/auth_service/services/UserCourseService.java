@@ -7,7 +7,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
 public interface UserCourseService {
-    boolean existsByUserAndCourseId(UserModel userModel,UUID uuid);
 
+    boolean existsByUserAndCourseId(UserModel userModel,UUID uuid);
     UserCourseModel save(UserCourseModel userCourseModel);
+    boolean existsByCourseId(UUID courseId);
+    void deleteAllByCourseId(UUID courseId);
 }
