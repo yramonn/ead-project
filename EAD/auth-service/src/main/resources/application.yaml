@@ -4,6 +4,8 @@ server:
     context-path: '/ead-auth-service/'
 
 spring:
+  application:
+    name: ead-auth-service
   datasource:
     url:  jdbc:postgresql://localhost:5432/ead-authuser
     username: postgres
@@ -32,4 +34,11 @@ ead:
   api:
     url:
       course: 'http://localhost:8083/ead-course-service'
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: 'http://localhost:8761/eureka'
+  instance:
+    hostname: localhost
 
