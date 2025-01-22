@@ -33,7 +33,7 @@ logging:
 ead:
   api:
     url:
-      course: 'http://localhost:8083/ead-course-service'
+      course: 'http://ead-course-service/ead-course-service'
 
 eureka:
   client:
