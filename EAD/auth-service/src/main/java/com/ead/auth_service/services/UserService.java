@@ -15,8 +15,6 @@ public interface UserService {
 
     Optional<UserModel> findById(UUID userId);
 
-    void deleteUserById(UserModel userModel);
-
     UserModel registerUser(UserRecordDto userRecordDto);
 
     boolean existsByUsername(String username);

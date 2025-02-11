@@ -4,12 +4,9 @@ import com.ead.auth_service.dtos.UserRecordDto;
 import com.ead.auth_service.enums.UserStatus;
 import com.ead.auth_service.enums.Usertype;
 import com.ead.auth_service.exceptions.NotFoundException;
-import com.ead.auth_service.models.UserCourseModel;
 import com.ead.auth_service.models.UserModel;
-import com.ead.auth_service.repositories.UserCourseRepository;
 import com.ead.auth_service.repositories.UserRepository;
 import com.ead.auth_service.services.UserService;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,11 +23,9 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     final UserRepository userRepository;
-    final UserCourseRepository userCourseRepository;
 
-    public UserServiceImpl(UserRepository userRepository, UserCourseRepository userCourseRepository) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.userCourseRepository = userCourseRepository;
     }
 
     @Override
@@ -45,16 +40,6 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Error: User not found");
         }
         return userModelOptional;
-    }
-
-    @Transactional
-    @Override
-    public void deleteUserById(UserModel userModel) {
-        List<UserCourseModel> userCourseModelList =  userCourseRepository.findAllUserCourseIntoUser(userModel.getUserId());
-        if(!userCourseModelList.isEmpty()) {
-            userCourseRepository.deleteAll(userCourseModelList);
-        }
-         userRepository.delete(userModel);
     }
 
     @Override

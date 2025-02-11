@@ -34,11 +34,8 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec,
-                                                       Pageable pageable,
-                                                       @RequestParam(required = false) UUID courseId) {
-        Page<UserModel> userModelPage = (courseId != null)
-                ? userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable)
-                : userService.findAll(spec, pageable);
+                                                       Pageable pageable) {
+        Page<UserModel> userModelPage = userService.findAll(spec, pageable);
         if(!userModelPage.isEmpty()) {
             for(UserModel user: userModelPage.toList()) {
                 user.add(linkTo(methodOn(UserController.class).getUserById(user.getUserId())).withSelfRel());
@@ -50,13 +47,6 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<Object> getUserById(@PathVariable(value = "userId") UUID userId){
         return ResponseEntity.status(HttpStatus.OK).body(userService.findById(userId).get());
-    }
-
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> deleteUserById(@PathVariable(value = "userId") UUID userId){
-        logger.debug("DELETE deleteUserById {}", userId);
-        userService.deleteUserById(userService.findById(userId).get());
-        return ResponseEntity.status(HttpStatus.OK).body("User deleted with success");
     }
 
     @PutMapping("/{userId}")
