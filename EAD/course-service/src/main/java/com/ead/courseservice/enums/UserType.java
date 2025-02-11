@@ -1,6 +1,6 @@
 package com.ead.courseservice.enums;
 
-public enum Usertype {
+public enum UserType {
     ADMIN,
     STUDENT,
     INSTRUCTOR,

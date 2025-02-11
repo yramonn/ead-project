@@ -1,18 +1,14 @@
 package com.ead.courseservice.services.impl;
 
-import com.ead.courseservice.clients.AuthUserClient;
 import com.ead.courseservice.dtos.CourseRecordDto;
 import com.ead.courseservice.exceptions.NotFoundException;
 import com.ead.courseservice.models.CourseModel;
-import com.ead.courseservice.models.CourseUserModel;
 import com.ead.courseservice.models.LessonModel;
 import com.ead.courseservice.models.ModuleModel;
 import com.ead.courseservice.repositories.CourseRepository;
-import com.ead.courseservice.repositories.CourseUserRepository;
 import com.ead.courseservice.repositories.LessonRepository;
 import com.ead.courseservice.repositories.ModuleRepository;
 import com.ead.courseservice.services.CourseService;
-import com.ead.courseservice.specifications.SpecificationTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,21 +28,16 @@ public class CourseServiceImpl implements CourseService {
     final CourseRepository courseRepository;
     final ModuleRepository moduleRepository;
     final LessonRepository lessonRepository;
-    final CourseUserRepository courseUserRepository;
-    final AuthUserClient authUserClient;
 
-    public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository, LessonRepository lessonRepository, CourseUserRepository courseUserRepository, AuthUserClient authUserClient) {
+    public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository, LessonRepository lessonRepository) {
         this.courseRepository = courseRepository;
         this.moduleRepository = moduleRepository;
         this.lessonRepository = lessonRepository;
-        this.courseUserRepository = courseUserRepository;
-        this.authUserClient = authUserClient;
     }
 
     @Transactional
     @Override
     public void delete(CourseModel courseModel) {
-        boolean deleteCourseUserInAuthUser = false;
         List<ModuleModel> moduleModelList = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
         if(!moduleModelList.isEmpty()){
             for(ModuleModel module : moduleModelList) {
@@ -57,15 +48,7 @@ public class CourseServiceImpl implements CourseService {
             }
             moduleRepository.deleteAll(moduleModelList);
         }
-        List<CourseUserModel> courseUserModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
-        if(!courseUserModelList.isEmpty()) {
-            courseUserRepository.deleteAll(courseUserModelList);
-            deleteCourseUserInAuthUser = true;
-        }
         courseRepository.delete(courseModel);
-        if(deleteCourseUserInAuthUser){
-            authUserClient.deleteCourseUserInAuthUser(courseModel.getCourseId());
-        }
     }
 
     @Override
