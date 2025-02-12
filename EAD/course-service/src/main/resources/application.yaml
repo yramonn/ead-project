@@ -21,6 +21,8 @@ spring:
     output:
       ansi:
         enabled: always
+    rabbitmq:
+      addresses: amqps://beugxnyy:Fc9DwOEnSkBg4ymBmQ76lxBJCprVaubq@beaver.rmq.cloudamqp.com/beugxnyy
 
 logging:
   level:
