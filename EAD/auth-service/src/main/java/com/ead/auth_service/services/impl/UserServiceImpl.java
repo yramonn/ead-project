@@ -1,12 +1,16 @@
 package com.ead.auth_service.services.impl;
 
+import com.ead.auth_service.dtos.UserEventDto;
 import com.ead.auth_service.dtos.UserRecordDto;
+import com.ead.auth_service.enums.ActionType;
 import com.ead.auth_service.enums.UserStatus;
 import com.ead.auth_service.enums.Usertype;
 import com.ead.auth_service.exceptions.NotFoundException;
 import com.ead.auth_service.models.UserModel;
+import com.ead.auth_service.publishers.UserEventPublisher;
 import com.ead.auth_service.repositories.UserRepository;
 import com.ead.auth_service.services.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +27,11 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     final UserRepository userRepository;
+    final UserEventPublisher userEventPublisher;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserEventPublisher userEventPublisher) {
         this.userRepository = userRepository;
+        this.userEventPublisher = userEventPublisher;
     }
 
     @Override
@@ -42,6 +48,7 @@ public class UserServiceImpl implements UserService {
         return userModelOptional;
     }
 
+    @Transactional
     @Override
     public UserModel registerUser(UserRecordDto userRecordDto) {
         var userModel = new UserModel();
@@ -50,7 +57,9 @@ public class UserServiceImpl implements UserService {
         userModel.setUsertype(Usertype.USER);
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
-        return userRepository.save(userModel);
+        userRepository.save(userModel);
+        userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(ActionType.CREATE));
+        return userModel;
     }
 
     @Override
@@ -95,6 +104,12 @@ public class UserServiceImpl implements UserService {
         userModel.setUsertype(Usertype.INSTRUCTOR);
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         return userRepository.save(userModel);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(UserModel userModel) {
+        userRepository.delete(userModel);
     }
 
 }

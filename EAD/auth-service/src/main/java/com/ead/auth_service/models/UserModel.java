@@ -1,10 +1,13 @@
 package com.ead.auth_service.models;
 
+import com.ead.auth_service.dtos.UserEventDto;
+import com.ead.auth_service.enums.ActionType;
 import com.ead.auth_service.enums.UserStatus;
 import com.ead.auth_service.enums.Usertype;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
@@ -55,6 +58,15 @@ public class UserModel extends RepresentationModel<UserModel> implements Seriali
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(nullable = false)
     private LocalDateTime lastUpdateDate;
+
+    public UserEventDto convertToUserEventDto(ActionType actionType) {
+        var userEventDto = new UserEventDto();
+        BeanUtils.copyProperties(this,userEventDto);
+        userEventDto.setUsertype(this.getUsertype().toString());
+        userEventDto.setUserStatus(this.getUserStatus().toString());
+        userEventDto.setActionType(actionType.toString());
+        return userEventDto;
+    }
 
     public UUID getUserId() {
         return userId;
