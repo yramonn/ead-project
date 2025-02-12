@@ -3,6 +3,8 @@ package com.ead.courseservice.controllers;
 import com.ead.courseservice.dtos.SubscriptionRecordDto;
 import com.ead.courseservice.models.CourseModel;
 import com.ead.courseservice.services.CourseService;
+import com.ead.courseservice.services.UserService;
+import com.ead.courseservice.specifications.SpecificationTemplate;
 import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,15 +24,20 @@ public class CourseUserController {
     Logger logger = LogManager.getLogger(CourseUserController.class);
 
     final CourseService courseService;
+    final UserService userService;
 
-    public CourseUserController(CourseService courseService) {
+    public CourseUserController(CourseService courseService, UserService userService) {
         this.courseService = courseService;
+        this.userService = userService;
     }
 
     @GetMapping("/courses/{courseId}/users")
-    public ResponseEntity<Object> getAllUsersByCourse(@PageableDefault(sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
-                                                                   @PathVariable(value = "courseId") UUID courseId) {
-        return ResponseEntity.status(HttpStatus.OK).body(" "); //refactor
+    public ResponseEntity<Object> getAllUsersByCourse(SpecificationTemplate.UserSpec spec,
+                                                      @PageableDefault(sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
+                                                      @PathVariable(value = "courseId") UUID courseId) {
+        courseService.findById(courseId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable));
     }
 
     @PostMapping("/courses/{courseId}/users/subscription")
