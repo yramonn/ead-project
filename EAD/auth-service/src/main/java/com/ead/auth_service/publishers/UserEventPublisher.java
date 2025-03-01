@@ -18,7 +18,7 @@ public class UserEventPublisher {
     private String exchangeUserEvent;
 
     public void publishUserEvent(UserEventDto userEventDto) {
-        rabbitTemplate.convertAndSend(exchangeUserEvent, userEventDto);
-
+        rabbitTemplate.convertAndSend(exchangeUserEvent, "", userEventDto);
     }
+
 }

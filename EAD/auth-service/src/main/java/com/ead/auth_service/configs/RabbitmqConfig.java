@@ -13,10 +13,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitmqConfig {
 
-    final CachingConnectionFactory connectionFactory;
+    final CachingConnectionFactory cachingConnectionFactory;
 
-    public RabbitmqConfig(CachingConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
+    public RabbitmqConfig(CachingConnectionFactory cachingConnectionFactory) {
+        this.cachingConnectionFactory = cachingConnectionFactory;
     }
 
     @Value(value = "${ead.broker.exchange.userEvent}")
@@ -24,7 +24,7 @@ public class RabbitmqConfig {
 
     @Bean
     public RabbitTemplate rabbitTemplate() {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
+        RabbitTemplate template = new RabbitTemplate(cachingConnectionFactory);
         template.setMessageConverter(messageConverter());
         return template;
     }
@@ -40,6 +40,5 @@ public class RabbitmqConfig {
     public FanoutExchange fanoutUserEvent() {
         return new FanoutExchange(exchangeUserEvent);
     }
-
 
 }
