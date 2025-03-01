@@ -29,8 +29,8 @@ public class UserModel implements Serializable {
     @Column(nullable = false)
     private String userStatus;
 
-    @Column(nullable = false)
-    private String userType;
+    @Column
+    private String usertype;
 
     @Column(length = 255)
     private String imageUrl;
@@ -79,12 +79,12 @@ public class UserModel implements Serializable {
         this.userStatus = userStatus;
     }
 
-    public String getUserType() {
-        return userType;
+    public String getUsertype() {
+        return usertype;
     }
 
-    public void setUserType(String userType) {
-        this.userType = userType;
+    public void setUsertype(String usertype) {
+        this.usertype = usertype;
     }
 
     public String getImageUrl() {
