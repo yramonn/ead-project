@@ -31,5 +31,5 @@ public interface UserService {
 
     UserModel registerInstructor(UserModel userModel);
 
-    void deleteUser(UserModel userModel);
+    void delete(UserModel userModel);
 }

@@ -81,4 +81,12 @@ public class UserController {
         logger.debug("PUT updateImage userRecordDto {}", userRecordDto);
         return ResponseEntity.status(HttpStatus.OK).body(userService.updateImage(userRecordDto, userService.findById(userId).get()));
     }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId){
+        logger.debug("DELETE deleteUser userId received {} ", userId);
+        userService.delete(userService.findById(userId).get());
+        return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully.");
+    }
+
 }
