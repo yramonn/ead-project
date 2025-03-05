@@ -1,7 +1,9 @@
 package com.ead.courseservice.controllers;
 
 import com.ead.courseservice.dtos.SubscriptionRecordDto;
+import com.ead.courseservice.enums.UserStatus;
 import com.ead.courseservice.models.CourseModel;
+import com.ead.courseservice.models.UserModel;
 import com.ead.courseservice.services.CourseService;
 import com.ead.courseservice.services.UserService;
 import com.ead.courseservice.specifications.SpecificationTemplate;
@@ -44,7 +46,16 @@ public class CourseUserController {
     public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId,
                                                                @RequestBody @Valid SubscriptionRecordDto subscriptionRecordDto) {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
-        //verifications with state transfer
-        return ResponseEntity.status(HttpStatus.CREATED).body(" ");
+        Optional<UserModel> userModelOptional = userService.findById(subscriptionRecordDto.userId());
+        if(courseService.existsByCourseAndUser(courseId, subscriptionRecordDto.userId())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Subscription already exists");
+        }
+
+        if(userModelOptional.get().getUserStatus().equals(UserStatus.BLOCKED.toString())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: User blocked");
+        }
+        courseService.saveSubscriptionUserInCourse(courseModelOptional.get(), userModelOptional.get());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Subscription successfully created.");
     }
 }
