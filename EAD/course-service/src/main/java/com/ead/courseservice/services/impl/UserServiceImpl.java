@@ -2,6 +2,7 @@ package com.ead.courseservice.services.impl;
 
 import com.ead.courseservice.exceptions.NotFoundException;
 import com.ead.courseservice.models.UserModel;
+import com.ead.courseservice.repositories.CourseRepository;
 import com.ead.courseservice.repositories.UserRepository;
 import com.ead.courseservice.services.UserService;
 import org.springframework.data.domain.Page;
@@ -16,9 +17,11 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     final UserRepository userRepository;
+    final CourseRepository courseRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, CourseRepository courseRepository) {
         this.userRepository = userRepository;
+        this.courseRepository = courseRepository;
     }
 
     @Override
@@ -33,6 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(UUID userId) {
+        courseRepository.deleteCourseUserByUser(userId);
         userRepository.deleteById(userId);
     }
 
