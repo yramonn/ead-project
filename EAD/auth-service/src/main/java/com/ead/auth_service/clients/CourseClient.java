@@ -2,16 +2,20 @@ package com.ead.auth_service.clients;
 
 import com.ead.auth_service.dtos.CourseRecordDto;
 import com.ead.auth_service.dtos.ResponsePageDto;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -29,6 +33,7 @@ public class CourseClient {
         this.restClient = restClientBuilder.build();
     }
 
+    @Retry(name = "retryInstance", fallbackMethod = "retryFallback")
     public Page<CourseRecordDto> getAllCoursesByUser(UUID userId, Pageable pageable){
         String url = baseUrlCourse + "/courses?userId=" + userId + "&page=" + pageable.getPageNumber() + "&size="
                 + pageable.getPageSize() + "&sort=" + pageable.getSort().toString().replaceAll(": ", ",");
@@ -45,5 +50,11 @@ public class CourseClient {
             throw new RuntimeException("Error Request RestClient", e);
         }
 
+    }
+
+    public Page<CourseRecordDto> retryFallback(UUID userId, Pageable pageable, Throwable t) {
+        logger.error("Inside retryFallback, cause - {}", t.toString());
+        List<CourseRecordDto> searchResult = new ArrayList<>();
+        return new PageImpl<>(searchResult);
     }
 }
