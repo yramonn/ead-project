@@ -9,8 +9,6 @@ spring:
       server:
         git:
           uri: https://github.com/yramonn/ead-config-server-repo
-          username: yramonn
-
 
 eureka:
   client:
