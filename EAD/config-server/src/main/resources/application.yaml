@@ -8,6 +8,10 @@ spring:
     config:
       server:
         git:
+          uri: https://github.com/yramonn/ead-config-server-repo
+          username: yramonn
+          password: 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
+
 
 eureka:
   client:
