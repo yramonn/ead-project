@@ -8,7 +8,6 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/yramonn/ead-config-server-repo
 
 eureka:
   client:
