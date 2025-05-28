@@ -1,63 +1,69 @@
-server:
-  port: 8082
-  servlet:
-    context-path: '/ead-auth-service/'
+#server:
+#  port: 8082
+#  servlet:
+#    context-path: '/ead-auth-service/'
 
 spring:
   application:
     name: ead-auth-service
-  datasource:
-    url:  jdbc:postgresql://localhost:5432/ead-authuser-v2
-    username: postgres
-    password: admin
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show_sql: true
-    properties:
-      hibernate:
-        jdbc:
-          lob.non-contextual-creation: true
-  output:
-    ansi:
-      enabled: always
-  rabbitmq:
-    addresses: amqps://beugxnyy:Fc9DwOEnSkBg4ymBmQ76lxBJCprVaubq@beaver.rmq.cloudamqp.com/beugxnyy
-
-logging:
-  level:
-    com.ead: TRACE
-    root: INFO
-    org.springframework.web: DEBUG
-    org.hibernate: INFO
-ead:
-  api:
-    url:
-      course: 'http://ead-course-service/ead-course-service'
-  broker:
-    exchange:
-      userEvent: ead.userevent
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: 'http://localhost:8761/eureka'
-  instance:
-    hostname: localhost
-
-resilience4j:
-  circuitbreaker:
-    instances:
-      circuitbreakerInstance:
-        slidingWindowSize: 30 #Janela de tempo
-        permittedNumberOfCallsInHalfOpenState: 2
-        slidingWindowType: TIME_BASED
-        minimumNumberOfCalls: 2
-        waitDurationInOpenState: 15s
-        failureRateThreshold: 80 #Porcentagem de falhas
-  retry:
-    instances:
-      retryInstance:
-        max-attempts: 3
-        wait-duration: 5s
+  config:
+    import: 'configserver:'
+  cloud:
+    config:
+      discovery:
+        serviceId: ead-config-server
+#  datasource:
+#    url:  jdbc:postgresql://localhost:5432/ead-authuser-v2
+#    username: postgres
+#    password: admin
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show_sql: true
+#    properties:
+#      hibernate:
+#        jdbc:
+#          lob.non-contextual-creation: true
+#  output:
+#    ansi:
+#      enabled: always
+#  rabbitmq:
+#    addresses: amqps://beugxnyy:Fc9DwOEnSkBg4ymBmQ76lxBJCprVaubq@beaver.rmq.cloudamqp.com/beugxnyy
+#
+#logging:
+#  level:
+#    com.ead: TRACE
+#    root: INFO
+#    org.springframework.web: DEBUG
+#    org.hibernate: INFO
+#ead:
+#  api:
+#    url:
+#      course: 'http://ead-course-service/ead-course-service'
+#  broker:
+#    exchange:
+#      userEvent: ead.userevent
+#
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: 'http://localhost:8761/eureka'
+#  instance:
+#    hostname: localhost
+#
+#resilience4j:
+#  circuitbreaker:
+#    instances:
+#      circuitbreakerInstance:
+#        slidingWindowSize: 30 #Janela de tempo
+#        permittedNumberOfCallsInHalfOpenState: 2
+#        slidingWindowType: TIME_BASED
+#        minimumNumberOfCalls: 2
+#        waitDurationInOpenState: 15s
+#        failureRateThreshold: 80 #Porcentagem de falhas
+#  retry:
+#    instances:
+#      retryInstance:
+#        max-attempts: 3
+#        wait-duration: 5s
 
