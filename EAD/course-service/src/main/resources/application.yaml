@@ -1,50 +1,56 @@
-server:
-  port: 8083
-  servlet:
-    context-path: '/ead-course-service/'
-
+#server:
+#  port: 8083
+#  servlet:
+#    context-path: '/ead-course-service/'
+#
 spring:
     application:
       name: ead-course-service
-    datasource:
-      url: jdbc:postgresql://localhost:5432/ead-course-v2
-      username: postgres
-      password: admin
-    jpa:
-      hibernate:
-        ddl-auto: update
-      show_sql: true
-      properties:
-        hibernate:
-          jdbc:
-            lob.non-contextual-creation: true
-    output:
-      ansi:
-        enabled: always
-    rabbitmq:
-      addresses: amqps://beugxnyy:Fc9DwOEnSkBg4ymBmQ76lxBJCprVaubq@beaver.rmq.cloudamqp.com/beugxnyy
-
-logging:
-  level:
-    com.ead: TRACE
-    root: INFO
-    org.springframework.web: DEBUG
-    org.hibernate: INFO
-
-ead:
-  api:
-    url:
-      authuser: 'http://ead-auth-service/ead-auth-service'
-  broker:
-    exchange:
-      userEventExchange: ead.userevent
-    queue:
-      userEventQueue:
-        name: ead.userevent.ms.course
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: 'http://localhost:8761/eureka'
-  instance:
-    hostname: localhost
+    config:
+      import: 'configserver:'
+    cloud:
+      config:
+        discovery:
+          serviceId: ead-config-server
+#    datasource:
+#      url: jdbc:postgresql://localhost:5432/ead-course-v2
+#      username: postgres
+#      password: admin
+#    jpa:
+#      hibernate:
+#        ddl-auto: update
+#      show_sql: true
+#      properties:
+#        hibernate:
+#          jdbc:
+#            lob.non-contextual-creation: true
+#    output:
+#      ansi:
+#        enabled: always
+#    rabbitmq:
+#      addresses: amqps://beugxnyy:Fc9DwOEnSkBg4ymBmQ76lxBJCprVaubq@beaver.rmq.cloudamqp.com/beugxnyy
+#
+#logging:
+#  level:
+#    com.ead: TRACE
+#    root: INFO
+#    org.springframework.web: DEBUG
+#    org.hibernate: INFO
+#
+#ead:
+#  api:
+#    url:
+#      authuser: 'http://ead-auth-service/ead-auth-service'
+#  broker:
+#    exchange:
+#      userEventExchange: ead.userevent
+#    queue:
+#      userEventQueue:
+#        name: ead.userevent.ms.course
+#
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: 'http://localhost:8761/eureka'
+#  instance:
+#    hostname: localhost
