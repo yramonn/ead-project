@@ -1,15 +1,19 @@
 package com.ead.courseservice.services.impl;
 
 import com.ead.courseservice.dtos.CourseRecordDto;
+import com.ead.courseservice.dtos.NotificationRecordCommandDto;
 import com.ead.courseservice.exceptions.NotFoundException;
 import com.ead.courseservice.models.CourseModel;
 import com.ead.courseservice.models.LessonModel;
 import com.ead.courseservice.models.ModuleModel;
 import com.ead.courseservice.models.UserModel;
+import com.ead.courseservice.publishers.NotificationCommandPublisher;
 import com.ead.courseservice.repositories.CourseRepository;
 import com.ead.courseservice.repositories.LessonRepository;
 import com.ead.courseservice.repositories.ModuleRepository;
 import com.ead.courseservice.services.CourseService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,14 +30,18 @@ import java.util.UUID;
 @Service
 public class CourseServiceImpl implements CourseService {
 
+    Logger logger = LogManager.getLogger(CourseServiceImpl.class);
+
     final CourseRepository courseRepository;
     final ModuleRepository moduleRepository;
     final LessonRepository lessonRepository;
+    final NotificationCommandPublisher notificationCommandPublisher;
 
-    public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository, LessonRepository lessonRepository) {
+    public CourseServiceImpl(CourseRepository courseRepository, ModuleRepository moduleRepository, LessonRepository lessonRepository, NotificationCommandPublisher notificationCommandPublisher) {
         this.courseRepository = courseRepository;
         this.moduleRepository = moduleRepository;
         this.lessonRepository = lessonRepository;
+        this.notificationCommandPublisher = notificationCommandPublisher;
     }
 
     @Transactional
@@ -97,5 +105,14 @@ public class CourseServiceImpl implements CourseService {
     public void saveSubscriptionUserInCourse(CourseModel courseModel, UserModel userModel) {
         courseRepository.saveCourseUser(courseModel.getCourseId(), userModel.getUserId());
 
+        try {
+            var notificationRecordCommandDto = new NotificationRecordCommandDto(
+                    "Bem-Vindo(a) ao Curso: " + courseModel.getName(),
+                    userModel.getFullName() + "a sua inscrição foi realizada com sucesso!",
+                    userModel.getUserId());
+            notificationCommandPublisher.publishNotificationCommand(notificationRecordCommandDto);
+        } catch(Exception e) {
+            logger.error("Error sending notification!");
+        }
     }
 }
