@@ -10,6 +10,8 @@ spring:
     config:
       discovery:
         serviceId: ead-config-server
+      username: admin
+      password: 'admin'
 
 #eureka:
 #  client:
