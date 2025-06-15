@@ -1,6 +1,7 @@
 package com.ead.auth_service.models;
 
 import com.ead.auth_service.enums.RoleType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -21,6 +22,7 @@ public class RoleModel implements GrantedAuthority, Serializable {
     private RoleType roleName;
 
     @Override
+    @JsonIgnore
     public String getAuthority() {
         return this.roleName.toString();
     }

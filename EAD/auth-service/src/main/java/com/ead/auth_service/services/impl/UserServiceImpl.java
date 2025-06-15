@@ -1,20 +1,22 @@
 package com.ead.auth_service.services.impl;
 
-import com.ead.auth_service.dtos.UserEventDto;
 import com.ead.auth_service.dtos.UserRecordDto;
 import com.ead.auth_service.enums.ActionType;
+import com.ead.auth_service.enums.RoleType;
 import com.ead.auth_service.enums.UserStatus;
 import com.ead.auth_service.enums.Usertype;
 import com.ead.auth_service.exceptions.NotFoundException;
 import com.ead.auth_service.models.UserModel;
 import com.ead.auth_service.publishers.UserEventPublisher;
 import com.ead.auth_service.repositories.UserRepository;
+import com.ead.auth_service.services.RoleService;
 import com.ead.auth_service.services.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,10 +30,14 @@ public class UserServiceImpl implements UserService {
 
     final UserRepository userRepository;
     final UserEventPublisher userEventPublisher;
+    final RoleService roleService;
+    final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, UserEventPublisher userEventPublisher) {
+    public UserServiceImpl(UserRepository userRepository, UserEventPublisher userEventPublisher, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userEventPublisher = userEventPublisher;
+        this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -57,6 +63,8 @@ public class UserServiceImpl implements UserService {
         userModel.setUsertype(Usertype.USER);
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userModel.setPassword(passwordEncoder.encode(userModel.getPassword()));
+        userModel.getRoles().add(roleService.findByRoleName(RoleType.ROLE_USER));
         userRepository.save(userModel);
         userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(ActionType.CREATE));
         return userModel;
