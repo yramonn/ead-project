@@ -37,7 +37,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                                 .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                                 .requestMatchers(AUTH_WHITELIST).permitAll()
-                                .requestMatchers(HttpMethod.GET, "/users/**").hasRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/users/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> basic.authenticationEntryPoint(authenticationEntryPoint))
