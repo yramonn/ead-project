@@ -4,7 +4,8 @@ Working on.....
 
 # About the project
 - Diagram:
-![image](https://github.com/user-attachments/assets/7a52e109-6436-4af0-ab2a-83ad7095739b)
+![image](https://github.com/user-attachments/assets/0a9bdf99-527e-40cf-8087-9474751bdd2a)
+
 
 # Tech
  • Java
@@ -26,7 +27,7 @@ Working on.....
  • Spring Cloud Config
  • Spring Security
 
-# Desing Patterns:
+# Design Patterns:
  • API RESTful
  • API Composition Pattern
  • Service Registry Discovery Pattern
