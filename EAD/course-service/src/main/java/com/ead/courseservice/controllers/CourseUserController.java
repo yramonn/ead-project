@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -33,6 +34,7 @@ public class CourseUserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasAnyRole('INSTRUCTOR')")
     @GetMapping("/courses/{courseId}/users")
     public ResponseEntity<Object> getAllUsersByCourse(SpecificationTemplate.UserSpec spec,
                                                       @PageableDefault(sort = "userId", direction = Sort.Direction.ASC) Pageable pageable,
@@ -42,6 +44,7 @@ public class CourseUserController {
                 .body(userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable));
     }
 
+    @PreAuthorize("hasAnyRole('USER')")
     @PostMapping("/courses/{courseId}/users/subscription")
     public ResponseEntity<Object> saveSubscriptionUserInCourse(@PathVariable(value = "courseId") UUID courseId,
                                                                @RequestBody @Valid SubscriptionRecordDto subscriptionRecordDto) {
