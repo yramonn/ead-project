@@ -32,4 +32,6 @@ public interface UserService {
     UserModel registerInstructor(UserModel userModel);
 
     void delete(UserModel userModel);
+
+    UserModel registerUserAdmin(UserRecordDto userRecordDto);
 }

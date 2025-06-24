@@ -130,4 +130,20 @@ public class UserServiceImpl implements UserService {
         userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(ActionType.DELETE));
     }
 
+    @Transactional
+    @Override
+    public UserModel registerUserAdmin(UserRecordDto userRecordDto) {
+        var userModel = new UserModel();
+        BeanUtils.copyProperties(userRecordDto, userModel);
+        userModel.setUserStatus(UserStatus.ACTIVE);
+        userModel.setUsertype(Usertype.ADMIN);
+        userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+        userModel.setPassword(passwordEncoder.encode(userModel.getPassword()));
+        userModel.getRoles().add(roleService.findByRoleName(RoleType.ROLE_ADMIN));
+        userRepository.save(userModel);
+        userEventPublisher.publishUserEvent(userModel.convertToUserEventDto(ActionType.CREATE));
+        return userModel;
+    }
+
 }
