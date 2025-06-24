@@ -17,6 +17,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,10 +35,12 @@ public class UserController {
 
     final UserService userService;
     final AuthenticationCurrentUserService authenticationCurrentUserService;
+    final PasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, AuthenticationCurrentUserService authenticationCurrentUserService) {
+    public UserController(UserService userService, AuthenticationCurrentUserService authenticationCurrentUserService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.authenticationCurrentUserService = authenticationCurrentUserService;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -85,7 +88,7 @@ public class UserController {
                                              UserRecordDto userRecordDto) {
         logger.debug("PUT updatePassword userId {}", userId);
         Optional<UserModel> userModelOptional = userService.findById(userId);
-        if(!userModelOptional.get().getPassword().equals(userRecordDto.oldPassword())) {
+        if(!passwordEncoder.matches(userRecordDto.oldPassword(), userModelOptional.get().getPassword())) {
             logger.warn("Password is incorrect! userId {}", userId);
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Old password is wrong");
         }
