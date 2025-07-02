@@ -13,5 +13,5 @@ public interface NotificationServicePort {
     NotificationDomain saveNotification(NotificationDomain notificationDomain);
     List<NotificationDomain> findAllNotificationsByUser(UUID userId, PageInfo pageInfo);
     Optional<NotificationDomain> findByNotificationIdAndUserId(UUID notificationId, UUID userId);
-    NotificationDomain updateNotification(NotificationStatus notificationRecordDto, NotificationDomain notificationDomain);
+    NotificationDomain updateNotification(NotificationStatus notificationStatus, NotificationDomain notificationDomain);
 }

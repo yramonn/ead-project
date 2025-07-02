@@ -29,16 +29,16 @@ public class NotificationServicePortImpl implements NotificationServicePort {
 
     @Override
     public List<NotificationDomain> findAllNotificationsByUser(UUID userId, PageInfo pageInfo) {
-        return List.of();
+        return notificationPersistencePort.findAllNotificationsByUserIdAndNotificationStatus(userId, NotificationStatus.CREATED, pageInfo);
     }
 
     @Override
     public Optional<NotificationDomain> findByNotificationIdAndUserId(UUID notificationId, UUID userId) {
-        return Optional.empty();
+        return notificationPersistencePort.findByNotificationIdAndUserId(notificationId, userId);
     }
 
     @Override
     public NotificationDomain updateNotification(NotificationStatus notificationRecordDto, NotificationDomain notificationDomain) {
-        return null;
+       return notificationPersistencePort.updateNotification(notificationRecordDto, notificationDomain);
     }
 }
