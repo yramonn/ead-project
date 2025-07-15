@@ -2,6 +2,7 @@ package com.ead.paymentservice.consumers;
 
 import com.ead.paymentservice.dtos.UserEventRecordDto;
 import com.ead.paymentservice.enums.ActionType;
+import com.ead.paymentservice.enums.PaymentStatus;
 import com.ead.paymentservice.services.UserService;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
@@ -27,7 +28,11 @@ public class UserConsumer {
         var userModel = userEventRecordDto.convertToUserModel();
 
         switch (ActionType.valueOf(userEventRecordDto.actionType())) {
-            case CREATE, UPDATE -> userService.save(userModel);
+            case CREATE -> {
+                userModel.setPaymentStatus(PaymentStatus.NOTSTARTED);
+                userService.save(userModel);
+            }
+            case UPDATE -> userService.save(userModel);
             case DELETE -> userService.delete(userEventRecordDto.userId());
 
         }
