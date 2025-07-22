@@ -1,15 +1,19 @@
 package com.ead.paymentservice.services.impl;
 
+import com.ead.paymentservice.dtos.PaymentCommandRecordDto;
 import com.ead.paymentservice.dtos.PaymentRequestRecordDto;
 import com.ead.paymentservice.enums.PaymentControl;
 import com.ead.paymentservice.exceptions.NotFoundException;
 import com.ead.paymentservice.models.CreditCardModel;
 import com.ead.paymentservice.models.PaymentModel;
 import com.ead.paymentservice.models.UserModel;
+import com.ead.paymentservice.publishers.PaymentCommandPublisher;
 import com.ead.paymentservice.repositories.CreditCardRepository;
 import com.ead.paymentservice.repositories.PaymentRepository;
 import com.ead.paymentservice.repositories.UserRepository;
 import com.ead.paymentservice.services.PaymentService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,15 +28,18 @@ import java.util.UUID;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
+    Logger logger = LogManager.getLogger(PaymentServiceImpl.class);
 
     final PaymentRepository paymentRepository;
     final UserRepository userRepository;
     final CreditCardRepository creditCardRepository;
+    final PaymentCommandPublisher paymentCommandPublisher;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository, PaymentCommandPublisher paymentCommandPublisher) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.creditCardRepository = creditCardRepository;
+        this.paymentCommandPublisher = paymentCommandPublisher;
     }
 
     @Transactional
@@ -56,8 +63,12 @@ public class PaymentServiceImpl implements PaymentService {
         paymentModel.setUser(userModel);
         paymentRepository.save(paymentModel);
 
-        //send request to queue
-
+        try {
+            var paymentCommandRecordDto = new PaymentCommandRecordDto(userModel.getUserId(), paymentModel.getPaymentId(), creditCardModel.getCardId());
+            paymentCommandPublisher.publishPaymentCommand(paymentCommandRecordDto);
+        }catch(Exception e) {
+            logger.error("Error sending payment command message with cause: {} ", e.getMessage());
+        }
         return paymentModel;
     }
 
