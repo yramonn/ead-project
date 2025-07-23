@@ -1,11 +1,7 @@
 package com.ead.paymentservice.consumers;
 
 import com.ead.paymentservice.dtos.PaymentCommandRecordDto;
-import com.ead.paymentservice.dtos.UserEventRecordDto;
-import com.ead.paymentservice.enums.ActionType;
-import com.ead.paymentservice.enums.PaymentStatus;
 import com.ead.paymentservice.services.PaymentService;
-import com.ead.paymentservice.services.UserService;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
@@ -29,6 +25,6 @@ public class PaymentConsumer {
             key = "${ead.broker.key.paymentCommandKey}")
     )
     public void listenPaymentCommand(@Payload PaymentCommandRecordDto paymentCommandRecordDto) {
-        //make payment
+        paymentService.makePayment(paymentCommandRecordDto);
     }
 }

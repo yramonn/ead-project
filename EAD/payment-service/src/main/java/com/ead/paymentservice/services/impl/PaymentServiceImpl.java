@@ -3,6 +3,7 @@ package com.ead.paymentservice.services.impl;
 import com.ead.paymentservice.dtos.PaymentCommandRecordDto;
 import com.ead.paymentservice.dtos.PaymentRequestRecordDto;
 import com.ead.paymentservice.enums.PaymentControl;
+import com.ead.paymentservice.enums.PaymentStatus;
 import com.ead.paymentservice.exceptions.NotFoundException;
 import com.ead.paymentservice.models.CreditCardModel;
 import com.ead.paymentservice.models.PaymentModel;
@@ -12,6 +13,7 @@ import com.ead.paymentservice.repositories.CreditCardRepository;
 import com.ead.paymentservice.repositories.PaymentRepository;
 import com.ead.paymentservice.repositories.UserRepository;
 import com.ead.paymentservice.services.PaymentService;
+import com.ead.paymentservice.services.PaymentStripeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -34,12 +36,14 @@ public class PaymentServiceImpl implements PaymentService {
     final UserRepository userRepository;
     final CreditCardRepository creditCardRepository;
     final PaymentCommandPublisher paymentCommandPublisher;
+    final PaymentStripeService paymentStripeService;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository, PaymentCommandPublisher paymentCommandPublisher) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository, PaymentCommandPublisher paymentCommandPublisher, PaymentStripeService paymentStripeService) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.creditCardRepository = creditCardRepository;
         this.paymentCommandPublisher = paymentCommandPublisher;
+        this.paymentStripeService = paymentStripeService;
     }
 
     @Transactional
@@ -90,5 +94,30 @@ public class PaymentServiceImpl implements PaymentService {
             throw new NotFoundException("Error: payment not found");
         }
         return paymentModelOptional;
+    }
+
+    @Transactional
+    @Override
+    public void makePayment(PaymentCommandRecordDto paymentCommandRecordDto) {
+        var paymentModel =  paymentRepository.findById(paymentCommandRecordDto.paymentId()).get();
+        var userModel  = userRepository.findById(paymentCommandRecordDto.userId()).get();
+        var creditCardModel = creditCardRepository.findById(paymentCommandRecordDto.cardId()).get();
+
+        paymentModel = paymentStripeService.processStripePayment(paymentModel, creditCardModel);
+        paymentRepository.save(paymentModel);
+
+        if(paymentModel.getPaymentControl().equals(PaymentControl.EFFECTED)){
+            userModel.setPaymentStatus(PaymentStatus.PAYING);
+            userModel.setLastPaymentDate(LocalDateTime.now(ZoneId.of("UTC")));
+            userModel.setPaymentExpirationDate(LocalDateTime.now(ZoneId.of("UTC")).plusMonths(12));
+            if(userModel.getFirstPaymentDate() == null){
+                userModel.setFirstPaymentDate(LocalDateTime.now(ZoneId.of("UTC")));
+            }
+        } else{
+            userModel.setPaymentStatus(PaymentStatus.DEBTOR);
+        }
+        userRepository.save(userModel);
+
+        //send payment event
     }
 }
