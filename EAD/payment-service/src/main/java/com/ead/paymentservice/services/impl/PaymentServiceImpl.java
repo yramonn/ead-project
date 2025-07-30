@@ -9,6 +9,7 @@ import com.ead.paymentservice.models.CreditCardModel;
 import com.ead.paymentservice.models.PaymentModel;
 import com.ead.paymentservice.models.UserModel;
 import com.ead.paymentservice.publishers.PaymentCommandPublisher;
+import com.ead.paymentservice.publishers.PaymentEventPublisher;
 import com.ead.paymentservice.repositories.CreditCardRepository;
 import com.ead.paymentservice.repositories.PaymentRepository;
 import com.ead.paymentservice.repositories.UserRepository;
@@ -37,13 +38,15 @@ public class PaymentServiceImpl implements PaymentService {
     final CreditCardRepository creditCardRepository;
     final PaymentCommandPublisher paymentCommandPublisher;
     final PaymentStripeService paymentStripeService;
+    final PaymentEventPublisher paymentEventPublisher;
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository, PaymentCommandPublisher paymentCommandPublisher, PaymentStripeService paymentStripeService) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository, UserRepository userRepository, CreditCardRepository creditCardRepository, PaymentCommandPublisher paymentCommandPublisher, PaymentStripeService paymentStripeService, PaymentEventPublisher paymentEventPublisher) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
         this.creditCardRepository = creditCardRepository;
         this.paymentCommandPublisher = paymentCommandPublisher;
         this.paymentStripeService = paymentStripeService;
+        this.paymentEventPublisher = paymentEventPublisher;
     }
 
     @Transactional
@@ -118,6 +121,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
         userRepository.save(userModel);
 
-        //send payment event
+        if(paymentModel.getPaymentControl().equals(PaymentControl.EFFECTED) ||
+                paymentModel.getPaymentControl().equals(PaymentControl.REFUSED)) {
+            paymentEventPublisher.publishPaymentEvent(paymentModel.convertToPaymentEventDto());
+        }
     }
 }
