@@ -39,7 +39,7 @@ public class ModuleController {
                 .body(moduleService.save(moduleRecordDto, courseService.findById(courseId).get()));
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/courses/{courseId}/modules")
     public ResponseEntity<Page<ModuleModel>> getAllModules(@PathVariable(value = "courseId") UUID courseId,
                                                            SpecificationTemplate.ModuleSpec spec,
@@ -48,7 +48,7 @@ public class ModuleController {
                 .body(moduleService.findAllModulesIntoCourse(SpecificationTemplate.moduleCourseId(courseId).and(spec), pageable));
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/courses/{courseId}/modules/{moduleId}")
     public ResponseEntity<Object> getModuleById(@PathVariable(value = "courseId")UUID courseId,
                                                 @PathVariable(value = "moduleId")UUID moduleId) {

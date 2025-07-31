@@ -34,4 +34,6 @@ public interface UserService {
     void delete(UserModel userModel);
 
     UserModel registerUserAdmin(UserRecordDto userRecordDto);
+
+    UserModel updateUserByPaymentEvents(UserModel userModel);
 }
