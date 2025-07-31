@@ -38,7 +38,7 @@ public class LessonController {
                 .body(lessonService.save(lessonRecordDto, moduleService.findById(moduleId).get()));
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/modules/{moduleId}/lessons")
     public ResponseEntity<Page<LessonModel>> getAllLessons(@PathVariable(value = "moduleId") UUID moduleId,
                                                            SpecificationTemplate.LessonSpec spec,
@@ -47,7 +47,7 @@ public class LessonController {
                 .body(lessonService.findAllLessonsIntoModule(SpecificationTemplate.lessonModuleId(moduleId).and(spec),pageable));
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/modules/{moduleId}/lessons/{lessonId}")
     public ResponseEntity<Object> getLessonById(@PathVariable(value = "moduleId")UUID moduleId,
                                                 @PathVariable(value = "lessonId")UUID lessonId) {

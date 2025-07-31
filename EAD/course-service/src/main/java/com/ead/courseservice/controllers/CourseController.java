@@ -42,7 +42,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseService.save(courseRecordDto));
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAllCourses(SpecificationTemplate.CourseSpec spec,
                                                            Pageable pageable,
@@ -53,7 +53,7 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.OK).body(courseModelPage);
     }
 
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('STUDENT')")
     @GetMapping("/{courseId}")
     public ResponseEntity<Object> getCourseById(@PathVariable(value = "courseId")UUID courseId) {
         return ResponseEntity.status(HttpStatus.OK)
