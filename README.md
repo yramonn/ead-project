@@ -4,7 +4,8 @@ Working on.....
 
 # About the project
 - Diagram:
-![image](https://github.com/user-attachments/assets/0a9bdf99-527e-40cf-8087-9474751bdd2a)
+<img width="1055" height="589" alt="image" src="https://github.com/user-attachments/assets/f74247ef-d071-40d8-ab70-8f8123ea1d01" />
+
 
 
 # Tech
