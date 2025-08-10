@@ -1,5 +1,5 @@
 📚 EAD Project
-Plataforma completa de EAD (Educação a Distância) construída sobre um ecossistema de microservices.
+Plataforma EAD construída sobre um ecossistema de microservices.
 O objetivo é fornecer uma solução escalável, segura e bem estruturada para gerenciamento de cursos, usuários, pagamentos e comunicação entre serviços.
 
 📌 Sobre o projeto
@@ -9,7 +9,6 @@ Arquitetura do sistema:
 
 <p align="center"> <img width="1055" height="589" alt="Diagrama do sistema" src="https://github.com/user-attachments/assets/f74247ef-d071-40d8-ab70-8f8123ea1d01" /> </p>
 🛠 Tecnologias Utilizadas
-Linguagem & Banco de Dados
 Java
 
 PostgreSQL
@@ -46,6 +45,8 @@ API RESTful
 
 API Composition Pattern
 
+Event Driven Pattern
+
 Service Registry Discovery Pattern
 
 API Gateway Pattern & Load Balancing
@@ -58,8 +59,6 @@ Resilience4j com Circuit Breaker Pattern
 
 Configuração Global com Cross-Cutting Pattern
 
-Observabilidade: Log Aggregation Pattern com Elastic Stack (ELK)
-
 Autenticação e Autorização com JWT (JSON Web Token)
 
 Access Token Pattern
@@ -68,4 +67,4 @@ Database por Microserviço
 
 👨‍💻 Desenvolvedor
 Ramon Silva
-🔗 LinkedIn
+🔗 www.linkedin.com/in/ramon--silva
