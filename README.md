@@ -1,14 +1,17 @@
 📚 EAD Project
+
 Plataforma EAD construída sobre um ecossistema de microservices.
 O objetivo é fornecer uma solução escalável, segura e bem estruturada para gerenciamento de cursos, usuários, pagamentos e comunicação entre serviços.
 
 📌 Sobre o projeto
+
 O sistema é formado por múltiplos microserviços interconectados, cada um com responsabilidades bem definidas, garantindo alta disponibilidade, segurança e performance.
 
 Arquitetura do sistema:
 
 <p align="center"> <img width="1055" height="589" alt="Diagrama do sistema" src="https://github.com/user-attachments/assets/f74247ef-d071-40d8-ab70-8f8123ea1d01" /> </p>
 🛠 Tecnologias Utilizadas
+
 Java
 
 PostgreSQL
